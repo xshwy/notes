@@ -48,6 +48,15 @@
 ## 通过Composer创建新项目
 `composer create-project laravel/laravel project-name`
 
+## 配置phpStorm
+1. 安装插件搜索 Laravel并安装
+2. 配置Laravel插件`Other Settings`->`Laravel Plugin`->`Enable plugin for this project`
+3. 在当前项目下的`composer.json`的`"require":{}`增加一行`"barryvdh/laravel-ide-helper":"dev-master"`
+4. 在当前项目文件夹执行 `composer update`
+5. 添加service provider，打开项目`config/app.php` 于`providers`添加如下一行：`'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',`
+6. 执行`php artisan ide-helper:generate`
+67. 再当前项目下的`composer.json`的`"post-update-cmd": [`增加一行`"php artisan ide-helper:generate"`
+
 
 ## 启动项目
 `php artisan serve`
