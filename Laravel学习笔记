@@ -55,7 +55,7 @@
 4. 在当前项目文件夹执行 `composer update`
 5. 添加service provider，打开项目`config/app.php` 于`providers`添加如下一行：`'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',`
 6. 执行`php artisan ide-helper:generate`
-67. 再当前项目下的`composer.json`的`"post-update-cmd": [`增加一行`"php artisan ide-helper:generate"`
+7. 再当前项目下的`composer.json`的`"post-update-cmd": [`增加一行`"php artisan ide-helper:generate"`
 
 
 ## 启动项目
