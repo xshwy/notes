@@ -38,6 +38,8 @@ dict:使用键值对存储的值，相当于其他语言的map类型
     1. `students['Erika'] # 如果key不存在，则会报错`
     2. `students.get('Erika','other value') # 如果key不存在，返回None；如果key不存在并且第二个参数不为空，则返回第二个参数的值`
 4. 删除 `students.pop('Erika')`
+5. 获取dict的所有key `students.keys()`
+6. 获取dict的所有value `students.values()`
 
 > dict与list相比，dict的访问速度更快，占用内存更大
 
@@ -73,7 +75,7 @@ sum = 0
 n = 99
 while n > 100:
     n = n + 1
-    print()
+    print(n)
 ```
 
 # 函数
@@ -133,6 +135,145 @@ diy(1,2,c=3) # 输出结果为 1,2,3
 导入函数
 ```python
 from file_name import diy_sum
+```
+
+# 高级特性
+
+切片:对于`list`,`tuple`,`dict`,`set`,`str`等便捷的取值方式，使用方式`S[start:end]` 不包含end；
+注：起始索引是0，倒数索引是-1
+1. 取索引1 ~ 3的值 `S[1:3]`
+2. 取前三个的值 `S[:3]`
+3. 取最后三个的值 `S[-3:]`
+4. 取倒数2~倒数4的值 `S[-2:-4]`
+5. 取前十个值，每2个取一个 `S[:10:2]`
+6. 取出所有值，每2个取一个 `S[::2]`
+
+迭代:
+0. 所有迭代都使用`for...in`
+1. 判断是否可以迭代
+```python
+from collections import Iterable
+isinstance('abc',Iterable) # 如果可以迭代，则返回true，反之返回false
+```
+2. 将list转成`索引-元素`的方法`enumerate(list)`
+3. 所有数据集合是`Iterable`类型
+4. 生成器的generator是`Iterator`类型，表示可以使用`next()`不断获取下一个值
+
+列表生成式:
+1. `[x * x for x in range(1,10)]` 表示循环1~10，每次x相乘
+2. `[m + n for m in 'ABC' for n in 'XYZ']`
+3. `[s.lower() for s in ['A','B','C']]` 将所有字符变成小写
+4. `[s.lower() for s in ['A','B','C',1,2] if isinstance(s,str)]` 将所有str类型的字符变成小写
+
+生成器:不用一次性生成完毕的`列表生成式`，它的类型是`generator`
+1. 定义`g = (x * x for x in range(1,10))` 生成了一个`generator`
+2. 访问
+    1. `next(g)` 会一直获取下一个元素值，如果获取完毕，会抛出异常错误
+    2. 通过for迭代，for会自动处理错误
+3. generator函数，将输出的地方设置为 `yield`即可
+
+```
+def odd():
+    print('step 1')
+    yield 1
+    print('step 2')
+    yield(3)
+    print('step 3')
+    yield(5)
+
+o = odd()
+next(o) # 输出 step 1 \n 1
+next(o) # 输出 step 2 \n 2
+next(o) # 输出 step 3 \n 3    
+```
+
+# 高阶函数
+
+map():`map`接收俩个参数，第一个是`函数`，第二个是`Iterable`，map将传入的函数一次作用到序列的每个元素，并把结果作为`Iterator`返回
+```python
+list(map(str,[1,2,3,4,5]))
+# 结果将所有元素转成了字符串，输出结果为 ['1', '2', '3', '4', '5']
+# 因为map的返回类型是`Iterator`，所以需要用转换成list才能直接显示输出
+
+```
+
+reduce():`reduce`接收俩个参数，第一个是`函数`这个函数必须接收俩个参数，第二个是`Iterable`，`reduce`把一个函数作用到序列上，将结果和序列的下一个元素累计计算
+```python
+from functools import reduce
+def add(x,y):
+    return x + y
+
+reduce(add,[1,2,3,4])
+# 输出的值是 10，相当于 add(add(add(1,2),3),4)
+```
+
+filter():`filter`同`map`一样，也是接收一个函数一个序列，与`map`不同的是，`filter`将传入的函数作用于每个元素，然后根据返回的`True`或`False`来决定是保留还是丢弃这个元素，返回值为`Iterator`
+```python
+def is_odd(n):
+    return n % 2 == 1
+
+list(filter(is_odd,[1,2,3,4,5])) # 输出的值为[1, 3, 5]
+```
+
+sorted():`sorted`是一个排序函数，接收三个参数，第一个参数是`序列`，第二个参数是`key=`自定义排序条件，第三个条件是`reverse=True/False`表示是否反向排序
+```python
+L = [('Bob',20),('Erika',10)]
+def by_name(s):
+    return s[0]
+
+def by_score(s):
+    return s[1]
+
+print(sorted(L,key=by_name)) # 按照名字排序
+print(sorted(L,key=by_score,reverse=True)) # 按照成绩倒序排序
+```
+
+返回函数:在一个函数内部再定义一个函数，并且将该函数作为返回值返回，返回的时候并没有执行，需要调用之后才会执行`返回函数中不要引用任何可能会变化的变量`
+```python
+def count(*args):
+    def sum():
+        ax = 0
+        for x in args:
+            ax = x + ax
+        return ax
+    return sum  # 注意，这里不可以写成 return sum()，否则会直接执行，这样返回的并不是函数本身
+
+c = count(1,2,3) # 在这里的时候，并没有执行计算结果
+
+print(c()) # 需要调用之后才会返回计算结果
+
+```
+
+匿名函数:使用`lambda`关键字表示，匿名函数只能有一个表达式，可以将匿名函数复制给一个变量，也可以作为返回值返回
+```python
+lambda x : x * x # 相当于f(x)，冒号前面的x表示函数参数
+
+def f(x):
+    return x * x
+
+ff = lambda x : x * x # 将匿名函数赋值给ff
+
+def fff(x,y):
+    return lambda :x * y # 将匿名函数返回，相当于 返回函数
+```
+
+装饰器:可以在代码运行期间动态增加功能的方式叫做`装饰器(decorator)`
+```python
+def log(text):
+    def decorator(func):
+        @functools.warps(func) # 增加这个装饰器可以使函数名称不会改变
+        def wrapper(*args,**kw):
+            print('%s %s()' % (text,func.__name__))
+            return func(*args,**kw)
+        return wrapper
+    return decorator
+
+@log('开始执行:')
+def now():
+    print('2016-01-14')
+
+now() # 输出结果第一行为：开始执行:now ，第二行为 2016-01-14
+now.__name__ # 结果为 wrapper，如果希望函数名称不要改变，则可以在  def wrapper(*agrs,**kw)上面增加装饰器  @functools.warps(func)即可，需要先导入functools，import functools
 ```
 
 # 其他
