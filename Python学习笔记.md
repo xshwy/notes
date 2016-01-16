@@ -62,14 +62,14 @@ else:
 ```
 
 循环
-1. for...in
+for...in
 ```python
 names = ['Nicolas','Jay','Jack']
 for name in names:
     print(name)
 ```
 
-2. while
+while
 ```python
 sum = 0
 n = 99
@@ -80,7 +80,7 @@ while n > 100:
 
 # 函数
 
-定义函数
+__定义函数__
 ```python
 def diy_sum(a,b):
     return a+b
@@ -92,19 +92,21 @@ def diy_sum(a,b):
 # 如果没有设置retun返回值，则自动返回None
 ```
 
-函数的参数
-0. 所有参数都可以使用`func(*args,**kw)`的方式调用，args是list或者tuple，kw是dict
-1. 位置参数:为必须传入的参数，定义方式为`def diy_sum(a,b) # a,b都是位置参数`
-2. 默认参数:若不传入，则使用默认的值，定义方式为
+__函数的参数__
+所有参数都可以使用`func(*args,**kw)`的方式调用，args是list或者tuple，kw是dict
+位置参数:为必须传入的参数，定义方式为`def diy_sum(a,b) # a,b都是位置参数`
+默认参数:若不传入，则使用默认的值，定义方式为
+
 ```python
 def diy_sum(a,b=2,c=3):
     print('a:%s,b:%s,c:%s' % (a,b,c))
 
 diy_sum(1) # 结果为a:1,b:2,c:3
-diy_sum(1,c=4) # 结果为 a:1,b:2,c:4
-# b就是默认参数，默认值为2`
+diy_sum(1,c=4) # 结果为 a:1,b:2,c:4， b就是默认参数，默认值为2`
 ```
-3. 可变参数:允许传入任意个参数，内部会将传入的参数组合位tuple，定义方式为在参数前面增加`*`
+
+可变参数:允许传入任意个参数，内部会将传入的参数组合位tuple，定义方式为在参数前面增加`*`
+
 ```python
 # names可以是直接传入list或者tuple
 def diy(*names):
@@ -113,7 +115,9 @@ def diy(*names):
 
 diy(1,2,3,4) # 输出结果为 1 2 3 4
 ```
-4. 关键词参数:允许传入任意个`参数名`与`值`，内部将会组合成dict，定义方式为在参数前面增加`**`
+
+关键词参数:允许传入任意个`参数名`与`值`，内部将会组合成dict，定义方式为在参数前面增加`**`
+
 ```python
 # kw参数可以是直接传入dict
 def diy(a,b,**kw):
@@ -121,7 +125,8 @@ def diy(a,b,**kw):
 
 diy(1,2,c=3,d=4) # 输出结果为 1,2,{'a':3,'b':4}
 ```
-5. 命名关键字参数:设置`关键字参数`可接受的参数，定义方式位：
+命名关键字参数:设置`关键字参数`可接受的参数，定义方式位：
+
 ```python
 # * 不是一个参数，是命名关键字的分隔符，命名关键字为必须传入的参数，可以设置默认值
 def diy(a,b,*,c,d=222):
@@ -172,7 +177,7 @@ isinstance('abc',Iterable) # 如果可以迭代，则返回true，反之返回fa
     2. 通过for迭代，for会自动处理错误
 3. generator函数，将输出的地方设置为 `yield`即可
 
-```
+```python
 def odd():
     print('step 1')
     yield 1
@@ -259,6 +264,7 @@ def fff(x,y):
 
 装饰器:可以在代码运行期间动态增加功能的方式叫做`装饰器(decorator)`
 ```python
+import functools
 def log(text):
     def decorator(func):
         @functools.warps(func) # 增加这个装饰器可以使函数名称不会改变
@@ -274,6 +280,94 @@ def now():
 
 now() # 输出结果第一行为：开始执行:now ，第二行为 2016-01-14
 now.__name__ # 结果为 wrapper，如果希望函数名称不要改变，则可以在  def wrapper(*agrs,**kw)上面增加装饰器  @functools.warps(func)即可，需要先导入functools，import functools
+```
+
+偏函数:`偏函数(Partial function)`，当函数的参数个数太多，需要简化时，使用functools.partial可以创建一个新的函数，这个新函数可以固定住原函数的部分参数，从而在调用时更简单。可以简单理解为其他语言里的`重载`,简单总结functools.partial的作用就是，把一个函数的某些参数给固定住（也就是设置默认值），返回一个新的函数，调用这个新函数会更简单。
+
+```python
+def f(x,y):
+    return x * y
+
+f2 = functools.partial(f,y=3)
+
+f2(2) # 返回结果是 2 * 3 = 6
+```
+
+# 模块(Module)
+一个.py文件即是一个模块，模块通过`包`来组织，为了避免冲突，可以设置一个顶层的包(建一个文件夹)，包目录下必须有一个 `__init__.py`的文件，可以是空文件也可以有内容，这样python才不会将这个`包`识别为普通目录。
+模块名称是 `包名.py文件名`，名为`包名`的py文件是 `包名/__init__.py`
+
+文档注释：任何模块代码的第一个字符串都被视为模块的`文档注释`
+作者名字：`__author__='xxx'`
+
+# 类(class)
+
+```python
+# 默认参数是object，这里可以传入 其他类作为参数
+# 若传入其他类，则表示继承这个类
+class Person(object):
+
+    gender = 'male' # gender变量为Person的类属性
+
+    # 绑定初始参数，init方法第一个参数永远是self变量，表示自身
+    # 有了 __init__ 方法之后，创建实例的时候就不可以传入空的参数了
+    def __init__(self,name,age):
+        self.__name = name # 俩个下划线开头的变量为私有变量，无法在外部访问，但是可以使用 _Person__name 来访问
+        self.age = age # 这个是正常的变量，可以在外部直接访问
+
+    def sayHi(self):
+        print("大家好，我叫%s，我今年%s岁了" % (self.__name,self.age))
+
+wg = Person('王刚',18)
+print(wg.__name) # 报错，无法在外部访问私有变量
+print(wg.age) # 18
+print(wg.gender) # male
+wg.sayHi() # 调用sayHI方法，输出 大家好，我叫王刚，今年18岁了
+
+```
+
+```python
+class Person(object):
+    # 创建类的时候，不创建__init__方法也可以
+    def sayHi(self):
+        print(self.name)
+
+
+xshwy = Person()
+xshwy.name = '王刚'
+xshwy.sayHi()
+```
+
+```python
+
+wg = Person()
+
+# 获取对象信息
+type(wg) # <class 'classTest.Person'>
+
+# 通过与types常量对比，来获取类型
+import types
+types.FunctionType
+types.BuiltinFunctionType
+types.LambdaType
+types.GeneratorType
+
+# 通过isinstance来判断
+isinstance(wg,Person) # True
+
+# 通过dir() 来获取对象信息
+print(dir(wg))
+
+# 通过hasattr() getattr() setattr()来操作对象
+hasattr(wg,'age') # True
+hasattr(wg,'address') # False
+
+getattr(wg,'age') # 18
+hi = getattr(wg,'sayHi') # 将wg的sayHi函数赋值给hi变量
+hi() # 调用hi变量相当于调用 wg.sayHi
+getattr(wg,'address',404) # 第三个参数为 无法获取参数 时报错的默认值，若不设置默认值，则会抛出错误
+
+setattr(wg,'age',15) # 将年龄修改为15岁
 ```
 
 # 其他
