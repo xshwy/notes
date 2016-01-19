@@ -192,6 +192,15 @@ next(o) # 输出 step 2 \n 2
 next(o) # 输出 step 3 \n 3    
 ```
 
+`定制类`:先略过，日后返回来在看 __TODO__
+
+```python
+# 使用枚举类型
+from enum import Enum
+Week = Enum('Week',('Mon','Tue','Wed','Thu','Fir','Sat','Sun'))
+Week.Mon # 可以直接调用，也可以迭代 Week.__members__
+```
+
 # 高阶函数
 
 map():`map`接收俩个参数，第一个是`函数`，第二个是`Iterable`，map将传入的函数一次作用到序列的每个元素，并把结果作为`Iterator`返回
@@ -304,7 +313,7 @@ f2(2) # 返回结果是 2 * 3 = 6
 
 ```python
 # 默认参数是object，这里可以传入 其他类作为参数
-# 若传入其他类，则表示继承这个类
+# 若传入其他类，则表示继承这个类，若传入多个值，表示为多重继承
 class Person(object):
 
     gender = 'male' # gender变量为Person的类属性
@@ -368,6 +377,133 @@ hi() # 调用hi变量相当于调用 wg.sayHi
 getattr(wg,'address',404) # 第三个参数为 无法获取参数 时报错的默认值，若不设置默认值，则会抛出错误
 
 setattr(wg,'age',15) # 将年龄修改为15岁
+```
+
+# 面向对象高级编程
+
+```python
+__slots__ = ('__name','age','cry') # 限制当前类能添加的属性和方法，对继承的子类不起作用
+
+def cry(self):
+    pritn('嘤嘤嘤')
+
+from types import MethodType
+# 动态的给变量增加函数，只针对当前实例，并不能作用于所有实例
+wg.cry = MethodType(cry,wg)
+
+# 若要针对所有实例，则可以给class绑定方法
+classTest.Person = MethodType(cry,classTest.Person)
+
+wg.cry() # 输出 嘤嘤嘤
+
+```
+
+```python
+#!/usr/bin/env python3
+# _*_ coding:utf-8 _*_
+
+__author__ = "CodeMart.io"
+
+class Screen(object):
+
+    # 使用 @property 装饰器来设置属性的 get 与 set 函数
+    @property
+    def width(self): # 获取width的值
+        return self._width # 这里有下划线是，如果不使用下划线的话 self.width是调用的函数，而不是变量
+
+    @width.setter # 设置width的值
+    def width(self,value):
+        self._width = value
+
+    @property
+    def height(self):
+        return self._height
+
+    @height.setter
+    def height(self,value):
+        self._height = value
+
+    @property
+    def resolution(self): # 对于resolution属性只设置了get方法，没设置set方法，这样只能访问，无法设置
+        return self._height * self._width
+
+s = Screen()
+s.width = 1024
+s.height = 768
+s.resolution = 100 # 无法设置，抛出异常
+
+print(s.width,'*',s.height,'=',s.resolution)
+```
+
+# 错误、调试和测试
+```python
+import logging
+
+class ErrorTest(object):
+    def tryTest(self):
+        try:
+            r = 10 / 0
+            print('result:',r)
+        except Exception as e: # 捕获错误
+             logging.exception(e)  # 记录错误
+        finally:
+            print('finally')
+
+if __name__=='__main__':
+    err = ErrorTest()
+    err.tryTest()
+```
+
+调试
+
+```python
+# 如果n=0，则抛出异常 'n is zero!'
+# 启动Python解释器时可以用-O参数来关闭assert
+assert n != 0, 'n is zero!' # 断言
+
+# logging不会抛出异常，而是输出自定义的错误信息
+import logging
+# 若需要输出info级别的信息，需要在引入之后，添加下面这行配置
+logging.basicConfig(level=logging.INFO)
+logging.info('n = %d' % n)
+
+```
+
+测试
+
+```python
+# 单元测试
+import unittest
+from errorTest import MyCalc
+
+class TestMyCalc(unittest.TestCase):
+
+    def setUp(self):
+        print('start...')
+
+    def tearDown(self):
+        print('end...')
+
+    def test_mySum(self):
+        m = MyCalc()
+        result = m.mySum(1,2)
+        self.assertEqual(result,3) # 如果结果不等于3，则会报错
+
+    if __name__ == '__main__':
+        unittest.main()
+
+# 文档测试
+def mySum(x,y):
+    '''
+    >>> mySum(1,2)
+    3
+    '''
+    return x + y
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
+
 ```
 
 # 其他
