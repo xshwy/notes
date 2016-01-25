@@ -509,7 +509,7 @@ if __name__ == '__main__':
 # 其他
 
 直接运行.py文件
-1. 再.py文件开头加入 `#!/usr/bin/env python3`
+1. 再.py文件开头加入 `#!/usr/bin/env python3` 这个要写本机的python目录
 2. 给文件执行权限`chmod a+x ./file.py`
 3. 执行.py文件 `./file.py`
 
